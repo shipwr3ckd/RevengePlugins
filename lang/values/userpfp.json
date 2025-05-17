@@ -24,7 +24,7 @@
   "ru": {"toast.patch_error":"UserPFP ну удалось заменить аватары!","toast.fetch_error":"UserPFP не может загрузить аватары!"},
   "sv": {"toast.patch_error":"UserPFP couldn't patch avatars!","toast.fetch_error":"UserPFP couldn't fetch avatars!"},
   "th": {"toast.patch_error":"UserPFP couldn't patch avatars!","toast.fetch_error":"UserPFP couldn't fetch avatars!"},
-  "tr": {"toast.patch_error":"UserPFP couldn't patch avatars!","toast.fetch_error":"UserPFP couldn't fetch avatars!"},
+  "tr": {"toast.patch_error":"UserPFP avatarlarınızı ekleyemedi!","toast.fetch_error":"UserPFP avatarlarınızı yenileyemedi!"},
   "uk": {"toast.patch_error":"UserPFP не вдалося оновити аватари!","toast.fetch_error":"UserPFP не вдалося отримати аватари!"},
   "vi": {"toast.patch_error":"UserPFP couldn't patch avatars!","toast.fetch_error":"UserPFP couldn't fetch avatars!"},
   "zh-Hans": {"toast.patch_error":"用户PFP 无法补丁头像！","toast.fetch_error":"用户PFP 无法获取头像！"},
