@@ -75,6 +75,11 @@ await Promise.all(promises);
 const srcPath = slashResolve("src") + "/";
 const langPath = slashResolve("lang") + "/";
 
+const shims = [
+	slashResolve("scripts/build/modules/workers/migration-shim.ts"),
+	slashResolve("src/stuff/migration.tsx"),
+];
+
 const runFileChange = async (localPath: string) => {
 	const file = slashResolve(localPath);
 	const newHash = createHash("sha256")
@@ -86,7 +91,11 @@ const runFileChange = async (localPath: string) => {
 
 	logWatch(`File changed  ${pc.italic(pc.gray(localPath))}`);
 
-	if (file.slice(langPath.length).startsWith("values/base/")) {
+	if (shims.includes(file)) {
+		for (const plugin of await readdir("src/plugins")) {
+			affectedPlugins.add(plugin);
+		}
+	} else if (file.slice(langPath.length).startsWith("values/base/")) {
 		const [_, __, langFile] = file.slice(langPath.length).split("/");
 
 		affectedPlugins.add(
@@ -175,7 +184,7 @@ const runFileChange = async (localPath: string) => {
 };
 
 chokidar
-	.watch(["src", "lang/values/base"], {
+	.watch(["src", "lang/values/base", ...shims], {
 		ignoreInitial: true,
 	})
 	.on("add", path =>
