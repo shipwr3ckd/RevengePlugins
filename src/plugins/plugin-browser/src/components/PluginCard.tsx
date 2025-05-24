@@ -5,7 +5,7 @@ import { showToast } from "@vendetta/ui/toasts";
 
 import TextBadge from "$/components/TextBadge";
 
-import { lang } from "..";
+import { lang, vstorage } from "..";
 import constants from "../stuff/constants";
 import { matchGithubLink, properLink } from "../stuff/util";
 import type { FullPlugin } from "../types";
@@ -18,16 +18,20 @@ export default function PluginCard({
 	item: FullPlugin;
 	changes: string[];
 }) {
-	const { proxiedLink, githubLink } = React.useMemo(() => {
-		let proxiedLink = `${constants.proxyUrl}${item.vendetta.original}`;
-		if (plugins[`https://${item.vendetta.original}`]) {
-			proxiedLink = `https://${item.vendetta.original}`;
-		} else if (plugins[`http://${item.vendetta.original}`]) {
-			proxiedLink = `http://${item.vendetta.original}`;
-		}
+	const { usableLink, trueLink, proxiedLink, githubLink } = React.useMemo(() => {
+		const id = item.vendetta.original;
+		const trueLink = `https://${
+			id.replace(/^vendetta\.nexpid\.xyz\//, "revenge.nexpid.xyz/")
+		}`;
+		const proxiedLink = `${constants.proxyUrl}${id}`;
+
+		let usableLink = vstorage.dangerZone ? trueLink : proxiedLink;
+		if (!vstorage.dangerZone && plugins[trueLink]) usableLink = trueLink;
 
 		return {
-			proxiedLink: properLink(proxiedLink),
+			usableLink,
+			trueLink,
+			proxiedLink,
 			githubLink: matchGithubLink(item.vendetta.original),
 		};
 	}, [item]);
@@ -42,13 +46,13 @@ export default function PluginCard({
 		hasPlugin: boolean;
 		pending: boolean;
 	}>({
-		hasPlugin: !!plugins[proxiedLink],
+		hasPlugin: !!plugins[usableLink],
 		pending: false,
 	});
 
 	React.useEffect(() => {
 		setStatus({
-			hasPlugin: !!plugins[proxiedLink],
+			hasPlugin: !!plugins[usableLink],
 			pending: false,
 		});
 	}, [item]);
@@ -56,15 +60,15 @@ export default function PluginCard({
 	const installFunction = async () => {
 		if (status.pending || isDisabled) return;
 		setStatus({
-			hasPlugin: !!plugins[proxiedLink],
+			hasPlugin: !!plugins[usableLink],
 			pending: true,
 		});
 
-		const shouldRemove = !!plugins[proxiedLink];
+		const shouldRemove = !!plugins[usableLink];
 
 		try {
-			if (shouldRemove) removePlugin(proxiedLink);
-			else await installPlugin(proxiedLink);
+			if (shouldRemove) removePlugin(usableLink);
+			else await installPlugin(usableLink);
 		} catch (_e) {
 			showToast(
 				lang.format(
@@ -88,7 +92,7 @@ export default function PluginCard({
 		);
 
 		setStatus({
-			hasPlugin: !!plugins[proxiedLink],
+			hasPlugin: !!plugins[usableLink],
 			pending: false,
 		});
 	};
@@ -129,7 +133,7 @@ export default function PluginCard({
 					? [
 						{
 							label: lang.format(
-								`sheet.plugin.${status.hasPlugin ? "un" : ""}install`,
+								status.hasPlugin ? "sheet.plugin.uninstall" : "sheet.plugin.install",
 								{},
 							),
 							icon: status.hasPlugin
@@ -148,18 +152,23 @@ export default function PluginCard({
 							lang.format("toast.copy_link", {}),
 							getAssetIDByName("CopyIcon"),
 						);
-						clipboard.setString(proxiedLink);
+						clipboard.setString(usableLink);
 					},
 				},
 				{
-					label: lang.format("sheet.plugin.copy_unproxied_link", {}),
+					label: lang.format(
+						vstorage.dangerZone
+							? "sheet.plugin.copy_proxied_link"
+							: "sheet.plugin.copy_unproxied_link",
+						{},
+					),
 					icon: "CopyIcon",
 					onPress: () => {
 						showToast(
 							lang.format("toast.copy_link", {}),
 							getAssetIDByName("CopyIcon"),
 						);
-						clipboard.setString(`https://${item.vendetta.original}`);
+						clipboard.setString(vstorage.dangerZone ? proxiedLink : trueLink);
 					},
 				},
 				...(githubLink

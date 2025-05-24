@@ -11,15 +11,21 @@ declare module "*.svg" {
 	export default text;
 }
 
+interface Asset {
+	uri: string;
+	width: number;
+	height: number;
+	file: string | null;
+	allowIconTheming: boolean;
+}
+
 declare module "*.png" {
-	const icon: {
-		uri: string;
-		width: number;
-		height: number;
-		file: string | null;
-		allowIconTheming: boolean;
-	};
-	export default icon;
+	const asset: Asset;
+	export default asset;
+}
+declare module "*.webp" {
+	const asset: Asset;
+	export default asset;
 }
 
 declare const IS_DEV: boolean;
