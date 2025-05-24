@@ -6,40 +6,116 @@ import { getAssetByID, getAssetIDByName } from "@vendetta/ui/assets";
 
 import TextBadge from "$/components/TextBadge";
 
-import { resolveSemanticColor } from "../../../../stuff/types";
-import lockAnnouncements from "../../assets/ColorfulChannels/announcement/lock.png";
-import warningAnnouncements from "../../assets/ColorfulChannels/announcement/warning.png";
-import lockForum from "../../assets/ColorfulChannels/forum/lock.png";
-import warningForum from "../../assets/ColorfulChannels/forum/warning.png";
-import lockImage from "../../assets/ColorfulChannels/image/lock.png";
-import warningImage from "../../assets/ColorfulChannels/image/warning.png";
+import { resolveSemanticColor } from "$/types";
+import announcementLock from "../../assets/ColorfulChannels/announcement/lock.png";
+import announcementWarning from "../../assets/ColorfulChannels/announcement/warning.png";
+import controller from "../../assets/ColorfulChannels/controller.png";
+import forumLock from "../../assets/ColorfulChannels/forum/lock.png";
+import forumWarning from "../../assets/ColorfulChannels/forum/warning.png";
+import imageLock from "../../assets/ColorfulChannels/image/lock.png";
+import imageWarning from "../../assets/ColorfulChannels/image/warning.png";
 import lock from "../../assets/ColorfulChannels/lock.png";
 import lockBottom from "../../assets/ColorfulChannels/lockBottom.png";
-import lockStage from "../../assets/ColorfulChannels/stage/lock.png";
-import lockText from "../../assets/ColorfulChannels/text/lock.png";
-import warningText from "../../assets/ColorfulChannels/text/warning.png";
-import lockVoice from "../../assets/ColorfulChannels/voice/lock.png";
-import warningVoice from "../../assets/ColorfulChannels/voice/warning.png";
+import stageLock from "../../assets/ColorfulChannels/stage/lock.png";
+import textController from "../../assets/ColorfulChannels/text/controller.png";
+import textLock from "../../assets/ColorfulChannels/text/lock.png";
+import textWarning from "../../assets/ColorfulChannels/text/warning.png";
 import warning from "../../assets/ColorfulChannels/warning.png";
 import warningBottom from "../../assets/ColorfulChannels/warningBottom.png";
 import { Module, ModuleCategory } from "../stuff/Module";
 
-const locks = [
-	["Announcements", lockAnnouncements],
-	["Text", lockText],
-	["Voice", lockVoice],
-	["Forum", lockForum],
-	["Stage", lockStage, true],
-	["Image", lockImage, true],
-] as const;
-const warnings = [
-	["Announcements", warningAnnouncements],
-	["Text", warningText],
-	["Voice", warningVoice],
-	["Forum", warningForum], // discord fix yo shit this is unused
-	// stage channels don't have a nsfw icon?,
-	["Image", warningImage, true],
-] as const;
+enum GlyphKind {
+	Lock = "Lock",
+	Warning = "Warning",
+	Controller = "Controller",
+}
+
+function getGlyphOverlay(kind: GlyphKind, bottom?: boolean) {
+	if (kind === GlyphKind.Lock) return bottom ? lockBottom : lock;
+	if (kind === GlyphKind.Warning) return bottom ? warningBottom : warning;
+	if (kind === GlyphKind.Controller) return controller;
+}
+
+const glyphColors = {
+	[GlyphKind.Lock]: [
+		"#f0b232",
+		semanticColors.STATUS_WARNING,
+	],
+	[GlyphKind.Warning]: [
+		"#f23f43",
+		semanticColors.STATUS_DANGER,
+	],
+	[GlyphKind.Controller]: [
+		"#23a55a",
+		semanticColors.STATUS_POSITIVE,
+	],
+} satisfies Record<GlyphKind, [fallback: string, semantic: string]>;
+
+const glyphs = [
+	// Announcements
+	{
+		name: "Announcements",
+		kind: GlyphKind.Lock,
+		base: announcementLock,
+	},
+	{
+		name: "Announcements",
+		kind: GlyphKind.Warning,
+		base: announcementWarning,
+	},
+
+	// Text
+	{
+		name: "Text",
+		kind: GlyphKind.Lock,
+		base: textLock,
+	},
+	{
+		name: "Text",
+		kind: GlyphKind.Warning,
+		base: textWarning,
+	},
+	{
+		name: "Text",
+		kind: GlyphKind.Controller,
+		base: textController,
+	},
+
+	// Forum (warning is unused)
+	{
+		name: "Forum",
+		kind: GlyphKind.Lock,
+		base: forumLock,
+	},
+	{
+		name: "Forum",
+		kind: GlyphKind.Warning,
+		base: forumWarning,
+	},
+
+	// Stage (warning doesnt exist)
+	{
+		name: "Stage",
+		kind: GlyphKind.Lock,
+		bottom: true,
+		base: stageLock,
+	},
+	{ name: "Stage", kind: GlyphKind.Warning, bottom: true, base: 0 },
+
+	// Image
+	{
+		name: "Image",
+		kind: GlyphKind.Lock,
+		bottom: true,
+		base: imageLock,
+	},
+	{
+		name: "Image",
+		kind: GlyphKind.Warning,
+		bottom: true,
+		base: imageWarning,
+	},
+];
 
 const ChannelInfo = findByName("ChannelInfo", false);
 
@@ -64,7 +140,7 @@ export default new Module({
 		},
 		colorIconsFallback: {
 			label: "Fallback colors for colored icon symbols",
-			subLabel: "Uses yellow and red colors regardless of theme",
+			subLabel: "Uses yellow, red and green colors regardless of theme",
 			type: "toggle",
 			default: false,
 		},
@@ -97,60 +173,39 @@ export default new Module({
 						: null;
 					if (!name) return;
 
-					const warninger = warnings.find(
-						([x]) => name === `${x}WarningIcon`,
-					);
-					const locker = locks.find(([x]) => name === `${x}LockIcon`);
+					const glyph = glyphs.find(x => name === `${x.name}${x.kind}Icon`);
+					if (!glyph) return;
 
-					const img = warninger
-						? {
-							base: warninger[1],
-							overlay: warninger[2] ? warningBottom : warning,
-							color: this.storage.options.colorIconsFallback
-								? "#f23f43"
-								: resolveSemanticColor(
-									semanticColors.STATUS_DANGER,
-								),
-						}
-						: locker
-						? {
-							base: locker[1],
-							overlay: locker[2] ? lockBottom : lock,
-							color: this.storage.options.colorIconsFallback
-								? "#f0b232"
-								: resolveSemanticColor(
-									semanticColors.STATUS_WARNING,
-								),
-						}
-						: null;
+					const color = glyphColors[glyph.kind];
+					const overlay = getGlyphOverlay(glyph.kind, glyph.bottom);
 
-					if (img) {
-						return React.createElement(
+					return React.createElement(
+						RN.View,
+						{},
+						React.createElement(RN.Image, {
+							style: RN.StyleSheet.flatten(style),
+							source: glyph.base,
+						}),
+						React.createElement(
 							RN.View,
-							{},
-							React.createElement(RN.Image, {
-								style: RN.StyleSheet.flatten(style),
-								source: img.base,
-							}),
-							React.createElement(
-								RN.View,
-								{
-									style: {
-										position: "absolute",
-										right: 0,
-										bottom: 0,
-									},
+							{
+								style: {
+									position: "absolute",
+									right: 0,
+									bottom: 0,
 								},
-								React.createElement(RN.Image, {
-									style: {
-										...RN.StyleSheet.flatten(style),
-										tintColor: img.color,
-									},
-									source: img.overlay,
-								}),
-							),
-						);
-					}
+							},
+							React.createElement(RN.Image, {
+								style: {
+									...RN.StyleSheet.flatten(style),
+									tintColor: this.storage.options.colorIconsFallback
+										? color[0]
+										: resolveSemanticColor(color[1]),
+								},
+								source: overlay,
+							}),
+						),
+					);
 				}),
 			);
 		},

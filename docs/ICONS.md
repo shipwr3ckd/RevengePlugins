@@ -33,6 +33,7 @@ Icons used by plugins are stored in the `<iconpack root>/_/external/` folder. He
 
 ### ColorfulChannels
 
+- <img src="../src/plugins/nexxutils/assets/ColorfulChannels/controller.png" alt="ColorfulChannels controller" width=20 height=20 /> — `ColorfulChannels/controller.png`
 - <img src="../src/plugins/nexxutils/assets/ColorfulChannels/lock.png" alt="ColorfulChannels lock" width=20 height=20 /> — `ColorfulChannels/lock.png`
 - <img src="../src/plugins/nexxutils/assets/ColorfulChannels/lockBottom.png" alt="ColorfulChannels lockBottom" width=20 height=20 /> — `ColorfulChannels/lockBottom.png`
 - <img src="../src/plugins/nexxutils/assets/ColorfulChannels/warning.png" alt="ColorfulChannels warning" width=20 height=20 /> — `ColorfulChannels/warning.png`
@@ -49,6 +50,7 @@ Icons used by plugins are stored in the `<iconpack root>/_/external/` folder. He
 - 📂 `ColorfulChannels/stage/`
   - <img src="../src/plugins/nexxutils/assets/ColorfulChannels/stage/lock.png" alt="ColorfulChannels lock" width=20 height=20 /> — `ColorfulChannels/stage/lock.png`
 - 📂 `ColorfulChannels/text/`
+  - <img src="../src/plugins/nexxutils/assets/ColorfulChannels/text/controller.png" alt="ColorfulChannels controller" width=20 height=20 /> — `ColorfulChannels/text/controller.png`
   - <img src="../src/plugins/nexxutils/assets/ColorfulChannels/text/lock.png" alt="ColorfulChannels lock" width=20 height=20 /> — `ColorfulChannels/text/lock.png`
   - <img src="../src/plugins/nexxutils/assets/ColorfulChannels/text/warning.png" alt="ColorfulChannels warning" width=20 height=20 /> — `ColorfulChannels/text/warning.png`
 - 📂 `ColorfulChannels/voice/`
