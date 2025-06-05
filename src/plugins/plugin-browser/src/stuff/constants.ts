@@ -1,7 +1,7 @@
 import constants from "$/constants";
 
 export default {
-	proxyUrl: "https://bn-plugins.github.io/vd-proxy/",
+	proxyUrl: "https://raw.githubusercontent.com/shipwr3ckd/plugin-tests/master/",
 	customLinks: {
 		"vendetta.nexpid.xyz": path =>
 			`${constants.github.url}tree/main/src/plugins/${path.join("/")}`,
