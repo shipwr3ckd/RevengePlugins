@@ -12,7 +12,7 @@
 </div>
 
 <h1 align="center">
-Plugin Browser
+Plugin Browser Revived
 </h1>
 
 Browse all proxied plugins
