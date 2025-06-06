@@ -87,7 +87,7 @@ export default function PluginCard({
 		if (!shouldRemove && item.bunny?.broken) {
 			return showConfirmationAlert({
 				title: "Are you sure?",
-				content: "This plugin is marked as broken and may break Discord completely.",
+				content: "Installing this plugin might cause crashes or even break your Discord.",
 				confirmText: "Install anyway",
 				cancelText: "Cancel",
 				onConfirm: doInstall,
@@ -97,7 +97,7 @@ export default function PluginCard({
 		if (!shouldRemove && item.bunny?.warning) {
 			return showConfirmationAlert({
 				title: "Are you sure?",
-				content: "This plugin might cause crashes or is already implemented natively.",
+				content: "Installing this plugin might cause crashes or even break your Discord.",
 				confirmText: "Install anyway",
 				cancelText: "Cancel",
 				onConfirm: doInstall,
