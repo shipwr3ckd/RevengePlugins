@@ -15,4 +15,4 @@
 Plugin Browser Revived
 </h1>
 
-Browse all proxied plugins
+Browse all plugins available on plugins list by Arthur777
