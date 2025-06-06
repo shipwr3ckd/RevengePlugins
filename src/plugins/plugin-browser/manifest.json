@@ -1,11 +1,15 @@
 {
 	"name": "Plugin Browser Revived",
-	"description": "Browse all proxied plugins",
+	"description": "Browse all plugins available on plugins list by Arthur777",
 	"authors": [
 		{
 			"name": "nexpid",
 			"id": "853550207039832084"
-		}
+		},
+		{
+			"name": "シグマ siguma",
+			"id": "737597276339437578"
+		}        
 	],
 	"main": "src/index.ts",
 	"vendetta": {
