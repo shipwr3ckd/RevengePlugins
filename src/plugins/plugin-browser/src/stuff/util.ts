@@ -1,5 +1,4 @@
 import { fetchPlugin, startPlugin, stopPlugin } from "@vendetta/plugins";
-
 import constants from "./constants";
 
 export function properLink(id: string): string {
@@ -11,6 +10,7 @@ const linkMatches = {
 	multiplePluginGitio: /^(.*?)(?=\.)\.github\.io\/(.*?)(?=\/)\/(.*)/,
 	singlePluginGitio: /^(.*?)(?=\.)\.github\.io\/(.*)/,
 	githubReleases: /^github\.com\/(.*?)(?=\/)\/(.*?)(?=\/)\/releases/,
+	rawGithub: /^raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)$/, // NEW
 };
 
 export function matchGithubLink(link: string): string | undefined {
@@ -21,11 +21,22 @@ export function matchGithubLink(link: string): string | undefined {
 
 	const single = link.match(linkMatches.singlePluginGitio)
 		?? link.match(linkMatches.githubReleases);
-	if (single?.[0]) return `https://github.com/${single[1]}/${single[2]}`;
+	if (single?.[0]) {
+		return `https://github.com/${single[1]}/${single[2]}`;
+	}
 
-	const [_, origin, path] = link.match(linkMatches.origin)!;
-	if (constants.customLinks[origin]) {
-		return constants.customLinks[origin](path.split("/"));
+	const raw = link.match(linkMatches.rawGithub); // NEW
+	if (raw?.[0]) {
+		const [, user, repo, branch, path] = raw;
+		return `https://github.com/${user}/${repo}/tree/${branch}/${path.replace(/\/$/, "")}`;
+	}
+
+	const match = link.match(linkMatches.origin);
+	if (match) {
+		const [, origin, path] = match;
+		if (constants.customLinks[origin]) {
+			return constants.customLinks[origin](path.split("/"));
+		}
 	}
 }
 

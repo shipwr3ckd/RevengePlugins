@@ -11,7 +11,8 @@ export interface FullPlugin {
 		original: string;
 	};
 	bunny?: {
-		disabled?: boolean;
+		broken?: boolean;
+		warning?: boolean;
 	};
 	hash: string;
 }

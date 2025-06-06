@@ -1,6 +1,3 @@
-// https://raw.githubusercontent.com/pyoncord/Bunny/dev/src/core/ui/settings/pages/Plugins/PluginCard.tsx
-// this is a modified version with some plugin browser specific changes
-
 import { React, ReactNative as RN, stylesheet } from "@vendetta/metro/common";
 import { rawColors, semanticColors } from "@vendetta/ui";
 import { getAssetIDByName } from "@vendetta/ui/assets";
@@ -13,8 +10,6 @@ import { IconButton, Stack } from "$/lib/redesign";
 import { lerp } from "$/types";
 
 const { FormRow } = Forms;
-
-// TODO: These styles work weirdly. iOS has cramped text, Android with low DPI probably does too. Fix?
 
 const styles = stylesheet.createThemedStyleSheet({
 	card: {
@@ -49,7 +44,7 @@ const styles = stylesheet.createThemedStyleSheet({
 
 interface Action {
 	icon: string;
-	disabled?: boolean;
+	broken?: boolean;
 	isDestructive?: boolean;
 	loading?: boolean;
 	onPress: () => void;
@@ -69,16 +64,13 @@ interface CardProps {
 	overflowTitle: string;
 	overflowActions: OverflowAction[];
 	highlight?: boolean;
-	disabled?: boolean;
+	broken?: boolean;
+	warning?: boolean;
 }
 
 export default function Card(props: CardProps) {
 	const baseColor = styles.card.backgroundColor as string;
-	const highlightColor = lerp(
-		baseColor,
-		rawColors.BRAND_500,
-		0.08,
-	) as any as string;
+	const highlightColor = lerp(baseColor, rawColors.BRAND_500, 0.08) as any as string;
 
 	const color = Reanimated.useSharedValue(baseColor);
 
@@ -105,7 +97,8 @@ export default function Card(props: CardProps) {
 				{
 					backgroundColor: color,
 				},
-				props.disabled && { opacity: 0.5 },
+				props.broken && { opacity: 0.5 },
+				props.warning && { opacity: 0.7 },
 			]}
 		>
 			<Stack spacing={16}>
@@ -138,26 +131,15 @@ export default function Card(props: CardProps) {
 					</Stack>
 					<RN.View>
 						<Stack spacing={5} direction="horizontal">
-							{props.actions?.map(
-								({
-									icon,
-									onPress,
-									isDestructive,
-									loading,
-									disabled,
-								}) => (
-									<IconButton
-										onPress={onPress}
-										disabled={disabled}
-										loading={loading}
-										size="sm"
-										variant={isDestructive
-											? "destructive"
-											: "secondary"}
-										icon={getAssetIDByName(icon)}
-									/>
-								),
-							)}
+							{props.actions?.map(({ icon, onPress, isDestructive, loading }) => (
+								<IconButton
+									onPress={onPress}
+									loading={loading}
+									size="sm"
+									variant={isDestructive ? "destructive" : "secondary"}
+									icon={getAssetIDByName(icon)}
+								/>
+							))}
 							{props.overflowActions && (
 								<IconButton
 									onPress={() => {
@@ -165,29 +147,20 @@ export default function Card(props: CardProps) {
 											key: "CardOverflow",
 											header: {
 												title: props.overflowTitle,
-												icon: props.headerIcon
-													&& props.headerIcon && (
-													<FormRow.Icon
-														source={props.headerIcon}
-													/>
+												icon: props.headerIcon && (
+													<FormRow.Icon source={props.headerIcon} />
 												),
 												onClose: hideActionSheet,
 											},
-											options: props.overflowActions?.map(
-												i => ({
-													...i,
-													icon: getAssetIDByName(
-														i.icon,
-													),
-												}),
-											),
+											options: props.overflowActions?.map((i) => ({
+												...i,
+												icon: getAssetIDByName(i.icon),
+											})),
 										});
 									}}
 									size="sm"
 									variant="secondary"
-									icon={getAssetIDByName(
-										"CircleInformationIcon-primary",
-									)}
+									icon={getAssetIDByName("CircleInformationIcon-primary")}
 								/>
 							)}
 						</Stack>
